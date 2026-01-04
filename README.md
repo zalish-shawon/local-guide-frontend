@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌍 Local Guide Platform – Frontend
 
-## Getting Started
+A modern **Next.js (App Router)** frontend for the **Local Guide Platform**, allowing tourists to book local guides, guides to manage tours, and admins to manage the entire system.
 
-First, run the development server:
+This frontend is fully integrated with the **Node.js + MongoDB + Stripe backend**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js 14+ (App Router)**
+- **TypeScript**
+- **Tailwind CSS**
+- **React Query (@tanstack/react-query)**
+- **Stripe (Client-side)**
+- **JWT Authentication**
+- **Axios**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🔐 Authentication & Roles
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Authentication is handled using **JWT** stored in `localStorage`.
 
-## Deploy on Vercel
+### User Roles:
+- **Tourist** – Explore tours, book guides, pay, review
+- **Guide** – Create/manage tours, accept bookings
+- **Admin** – Manage users and tours
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Role-based UI is enforced on:
+- Dashboards
+- Sidebars
+- Protected pages
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🏠 Pages Overview
+
+### Public Pages
+- `/` – Home page (featured tours, search, CTA)
+- `/tours` – Explore all tours
+- `/tours/[id]` – Tour details
+
+### Auth Pages
+- `/login`
+- `/register`
+
+### Dashboards
+- `/dashboard` – Role-based dashboard
+- `/dashboard/tourist/bookings`
+- `/dashboard/guide/tours`
+- `/dashboard/guide/bookings`
+- `/dashboard/admin/users`
+- `/dashboard/admin/tours`
+
+---
+
+## 🔌 API Integration
+
+All API calls use **Axios** via a centralized client.
+
+### `services/api.ts`
+
+```ts
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+});
+
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
+export default api;
+
+
